@@ -1,0 +1,70 @@
+clc; clear; clf; close all 
+
+fs = 1000; 
+t = 0:1/fs:1; 
+
+m = sin(2*pi*5*t); 
+fc=100; 
+c = cos(2*pi*100*t); 
+
+y = m.*c; 
+y_demod = y.*c; 
+
+
+N = 5; 
+[b,a] = butter(N,fc*2/fs); 
+
+y_filtered = filter(b,a,y_demod); 
+
+ 
+figure 
+subplot(3,2,1);
+plot(t,m); 
+title('Modulating Signal'); 
+
+Y_m = fft(m); 
+
+subplot(3,2,2); 
+plot(abs(Y_m)); 
+title('FFT of Modulating Signal'); 
+
+subplot(3,2,3); 
+plot(t,c); 
+title('Carrier Signal'); 
+
+Y_c = fft(c); 
+
+subplot(3,2,4); 
+plot(abs(Y_c)); 
+title('FFT of Carrier Signal'); 
+
+subplot(3,2,5); 
+plot(t,y); 
+title('Modulated Signal'); 
+
+Y_y = fft(y); 
+
+subplot(3,2,6); 
+plot(abs(Y_y)); 
+title('FFT of Modulated Signal');
+
+figure;
+subplot(2,2,1); 
+plot(t,y_demod); 
+title('Demodulated Signal'); 
+
+Y_demod = fft(y_demod); 
+
+subplot(2,2,2); 
+plot(abs(Y_demod)); 
+title('FFT of Demodulated Signal'); 
+
+subplot(2,2,3); 
+plot(t,y_filtered); 
+title('Filtered Demodulated Signal'); 
+
+Y_filtered = fft(y_filtered); 
+
+subplot(2,2,4); 
+plot(abs(Y_filtered)); 
+title('FFT of Filtered Demodulated Signal');

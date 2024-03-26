@@ -1,0 +1,93 @@
+clc;
+clear;
+N = 100;
+noiseVariance = 0.5;
+data = randn(1,N) >= 0;
+Rb = 1e3;
+amplitude = 1;
+ 
+oddBits = data (1:2:end);
+evenBits = data (2:2:end);
+ 
+[evenTime, evenNRZData, Fs] = NRZ_Encoder (evenBits, Rb, amplitude, 'Polar');
+[oddTime, oddNRZData] = NRZ_Encoder (oddBits, Rb, amplitude, 'Polar');
+ 
+Fc = 2 * Rb;
+inPhaseOsc = 1/sqrt(2)*cos(2*pi*Fc*evenTime);
+quadPhaseOsc = 1/sqrt(2)*sin(2*pi*Fc*oddTime);
+ 
+qpskModulated = oddNRZData.*quadPhaseOsc + evenNRZData.*inPhaseOsc;
+ 
+Tb = 1/Rb;
+ 
+subplot(3,2,1);
+stem(data);
+xlabel('Samples');
+ylabel('Amplitude');
+title('Input Binary Data');
+axis([0, N, -0.5, 1.5]);
+ 
+subplot(3,2,3);
+plotHandle = plot(qpskModulated);
+xlabel('Samples');
+ylabel('Amplitude');
+title('QPSK modulated Data');
+ 
+ylim([-1.5, 1.5])
+grid on;
+ 
+
+ 
+noise = sqrt(noiseVariance)*randn(1,length(qpskModulated));
+received = qpskModulated + noise;
+subplot(3,2,5);
+plot(received);
+xlabel('Time');
+ylabel('Amplitude');
+title('QPSK Modulated Data with AWGN noise');
+ 
+
+iSignal = received.*inPhaseOsc;
+qSignal = received.*quadPhaseOsc;
+ 
+
+integratorBase = 0:1/Fs:Tb-1/Fs;
+ 
+for i = 0:(length(iSignal)/(Tb*Fs))-1
+   inPhaseComponent(i+1) = trapz(integratorBase, iSignal(int32(i*Tb*Fs+1):int32((i+1)*Tb*Fs)));
+end
+ 
+for i = 0:(length(qSignal)/(Tb*Fs))-1
+   quadraturePhaseComponent(i+1) = trapz(integratorBase, qSignal(int32(i*Tb*Fs+1):int32((i+1)*Tb*Fs)));
+end
+ 
+
+estimatedInphaseBits = (inPhaseComponent>=0);
+estimatedQuadphaseBits = (quadraturePhaseComponent>=0);
+ 
+finalOutput = reshape([estimatedQuadphaseBits;estimatedInphaseBits],1,[]);
+ 
+BER = sum(xor(finalOutput,data))/length(data);
+ 
+subplot(3,2,2);
+stem(finalOutput);
+xlabel('Samples');
+ylabel('Amplitude');
+title('Detected Binary Data after QPSK demodulation');
+axis([0, N, -0.5, 1.5]);
+ 
+ 
+subplot(3,2,4);
+plot(evenNRZData,oddNRZData,'ro');
+xlabel('Inphase Component');
+ylabel('Quadrature Phase Component');
+title('QPSK Constellation at Transmitter');
+axis([-1.5, 1.5, -1.5, 1.5]);
+ 
+ 
+subplot(3,2,6);
+plot(2*estimatedInphaseBits-1, 2*estimatedQuadphaseBits-1,'ro');
+xlabel('Inphase Component');
+ylabel('Quadrature Phase Component');
+title(['QPSK Constellation at Receiver when AWGN Noise Variance = ',num2str(noiseVariance)]);
+axis([-1.5, 1.5, -1.5, 1.5]);

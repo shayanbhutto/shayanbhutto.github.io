@@ -1,18 +1,19 @@
 clc; clear all 
-% Define the message signal 
-fs = 10000; % sample rate 
-t = 0:1/fs:1; % time vector 
-f_m = 5; % frequency of message signal 
-m = cos(2*pi*f_m*t); % message signal 
-% Define the carrier signal 
+
+fs = 10000;
+t = 0:1/fs:1;
+
+f_m = 5;
+m = cos(2*pi*f_m*t);
+
 f_c = 100; % frequency of carrier signal 
-% Define the frequency deviation 
+ 
 fdev = 50; 
-% Perform FM modulation 
+
 y_mod = fmmod(m,f_c,fs,fdev); 
-% Perform FM demodulation 
+
 y_demod = fmdemod(y_mod,f_c,fs,fdev); 
-% Plot the signals in time domain 
+
 figure; 
 subplot(3,1,1); 
 plot(t,m); 

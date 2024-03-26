@@ -1,0 +1,54 @@
+clc; clear all 
+% Define the message signal 
+fs = 10000; % sample rate 
+t = 0:1/fs:1; % time vector 
+f_m = 5; % frequency of message signal 
+m = cos(2*pi*f_m*t); % message signal 
+% Define the carrier signal 
+f_c = 100; % frequency of carrier signal 
+% Define the frequency deviation 
+fdev = 50; 
+% Perform FM modulation 
+y_mod = fmmod(m,f_c,fs,fdev); 
+% Perform FM demodulation 
+y_demod = fmdemod(y_mod,f_c,fs,fdev); 
+% Plot the signals in time domain 
+figure; 
+subplot(3,1,1); 
+plot(t,m); 
+title('Message signal'); 
+xlabel('Time (s)'); 
+ylabel('Amplitude');
+ 
+subplot(3,1,2); 
+plot(t,y_mod); 
+title('FM modulated signal'); 
+xlabel('Time (s)'); 
+ylabel('Amplitude'); 
+
+subplot(3,1,3); 
+plot(t,y_demod); 
+title('FM demodulated signal'); 
+xlabel('Time (s)'); 
+ylabel('Amplitude'); 
+
+% Plot the signals in frequency domain 
+hold on
+figure;
+subplot(3,1,1); 
+plot(fftshift(abs(fft(m)))); 
+title('Message signal'); 
+xlabel('Frequency (Hz)'); 
+ylabel('Amplitude'); 
+
+subplot(3,1,2); 
+plot(fftshift(abs(fft(y_mod)))); 
+title('FM modulated signal'); 
+xlabel('Frequency (Hz)'); 
+ylabel('Amplitude'); 
+
+subplot(3,1,3); 
+plot(fftshift(abs(fft(y_demod)))); 
+title('FM demodulated signal'); 
+xlabel('Frequency (Hz)'); 
+ylabel('Amplitude');

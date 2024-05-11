@@ -1,0 +1,23 @@
+The simulation aims to assess the Bit Error Rate (BER) versus Eb/N0 performance of an Orthogonal Frequency Division Multiplexing (OFDM) system using BPSK modulation in an Additive White Gaussian Noise (AWGN) channel. Here's a discussion of the results:
+1.	Simulation Parameters:
+•	𝑁=64N=64 (FFT size or total number of subcarriers)
+•	𝑁𝑠𝑑=48Nsd=48 (Number of data subcarriers)
+•	𝑁𝑠𝑝=4Nsp=4 (Number of pilot subcarriers)
+•	𝑜𝑓𝑑𝑚𝐵𝑊=20×106ofdmBW=20×106 (OFDM bandwidth)
+2.	Derived Parameters:
+•	𝑑𝑒𝑙𝑡𝑎𝐹=0.3125deltaF=0.3125 MHz (Bandwidth for each subcarrier)
+•	𝑇𝑓𝑓𝑡=3.2Tfft=3.2 μs (IFFT/FFT period)
+•	𝑇𝑔𝑖=0.8Tgi=0.8 μs (Guard interval duration)
+•	𝑇𝑠𝑖𝑔𝑛𝑎𝑙=4Tsignal=4 μs (Total duration of BPSK-OFDM symbol)
+•	𝑁𝑐𝑝=16Ncp=16 (Number of symbols allocated to cyclic prefix)
+•	𝑁𝑠𝑡=52Nst=52 (Number of total used subcarriers)
+•	𝑛𝐵𝑖𝑡𝑠𝑃𝑒𝑟𝑆𝑦𝑚=52nBitsPerSym=52 (Number of Bits per Symbol for BPSK)
+3.	Simulation Results:
+•	The simulation evaluates the BER performance over a range of Eb/N0 values (-20 dB to 8 dB) for 10,000 OFDM symbols.
+•	Theoretical BER curves are calculated using the formula for BPSK modulation over AWGN.
+•	The simulated BER results are plotted against Eb/N0, showing the system's actual performance in an AWGN channel.
+4.	Performance Analysis:
+•	The plotted BER curve showcases how the system's performance degrades as the Eb/N0 ratio decreases, indicating higher noise levels.
+•	A comparison between the simulated BER and theoretical BER helps assess the system's deviation from ideal performance under AWGN conditions.
+•	The simulation provides insights into the robustness of the OFDM system with BPSK modulation, highlighting its resilience or vulnerability to noise in practical communication scenarios.
+Overall, this simulation and analysis contribute to understanding the trade-offs and performance characteristics of OFDM systems, particularly in terms of error rates under varying signal-to-noise ratios, which is crucial for designing reliable communication systems.

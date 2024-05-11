@@ -1,0 +1,47 @@
+Function[autoCorrelation,lags]=autoCorr(sequence,N,Np,doPlot)
+%Accepts four arguments namely "sequence",N,Np and "doPlot" %sequence is the input sequence(1s and 0s) of which the autocorrelation is desired
+% N is the length of the m sequence
+% Np is the number of periods over which is autocorrelation is desired
+%if doPlot = 1, the results of the autocorrelation will be plotted
+%if doPlot = 0, plots will be ignored.
+if nargin == 1
+    doPlot = 0;
+end
+%Convert to polar form
+a = 1 - 2*sequence;
+a_present = repmat(a,1,Np); %copy the sequence Np times
+L = length(a_present);
+%Compute the autocorrelation
+a_past = a_present'; %delay=0
+for k = 1:L
+    C(k) = (a_present*a_past)/L;
+    a_past_out = a_past(end);
+    a_past(2:end) = a_past(1:end-1);
+    a_past(1) = a_past_out;
+end
+%Computing the simulated Autocorrelation using Conjugate Symmmetry property
+C_sim = [conj(fliplr(C(2:end))) C];
+%delay vector
+l = -(L-1):(L-1);
+m = -(Np-1):(Np-1);
+%Compute theoretical Autocorrelation
+C_theory = (-1/N)*ones(2*L-1,1);
+for i=1:length(m)
+    if (L + m(i)*N>0) && (L + m(i)*N)
+        C_theory(L + m(i)*N) = 1;
+    end
+end
+if doPlot
+    figure;
+    plot(l,C_sim,'-*r','markersize',3);
+    hold on;
+    plot(l,C_theory,'--s','markersize',4);
+    hold off;
+    legend('Simulation','Theory','orientation','horizontal');
+    title('Comparison of Autocorrelation function of the m-sequence');
+    xlabel('lag (\it{l})');
+    ylabel('C_{aa}(\it{l})');
+    grid;
+end
+autoCorrelation = C_sim;
+lags = l;

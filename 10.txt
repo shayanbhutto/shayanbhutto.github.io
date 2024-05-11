@@ -1,0 +1,26 @@
+% Matlab Program to test Walsh Hadamard Codes and to test their orthogonality
+% Plots cross-correlation and auto correlation of Walsh Hadamard Codes
+clear all; clc;
+codeSize = 8;
+[H] = generateHadamardMatrix(codeSize);
+%-----------------------------------------------------------
+%Cross-Correlation of Walsh Code 1 with rest of Walsh Codes
+h = zeros(1, codeSize-1); %For dynamic Legends
+s = cell(1, codeSize-1);  %For dynamic Legends
+for rows = 2:codeSize
+    [crossCorrelation,lags] = crossCorr(H(1,:),H(rows,:));
+    h(rows-1) = plot(lags,crossCorrelation);
+    s{rows-1} = sprintf('Walsh Code Sequence #-%d', rows);
+    hold all;
+end
+%Dynamic Legends
+% Select the plots to include in the legend
+index = 1:codeSize-1;
+% Create legend for the selected plots
+legend(h(index),s{index});
+title('Cross Correlation of Walsh Code 1 with the rest of the Walsh Codes');
+ylabel('Cross Correlation');
+xlabel('Lags');
+%-----------------------------------------------------------
+%AutoCorrelation of Walsh Code - 1
+autoCorr(H(2,:),8,2,1);

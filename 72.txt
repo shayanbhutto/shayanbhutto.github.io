@@ -1,0 +1,64 @@
+close all;
+clear all;
+clc;
+ 
+%% Parameter
+m = 4
+data_size = 10000;
+ 
+%% Simulation Parameters
+EbNo = 0:1:12;
+ 
+for j = 1:length(EbNo)        % ebn0 loop
+    
+    tic
+    nloop = 100;       % # of simulation loop
+    noe_qam = 0;
+    noe_qam_hamm = 0;
+    nod = 0;            % # of data
+        
+    SNR = 10^(EbNo(j)/10);
+    sgma = 1/sqrt(2*SNR);
+    
+    for i = 1:nloop
+        % Generate prbs data and encode the data using Hamming code
+        % general algorithm
+        [data, data_hamm] = encodeData(m, data_size);
+        
+        % QAM MOD/DEMOD ( AWGN Channel )
+        rdata_qam = qam_mod_demod(data, EbNo(j));
+        rdata_qam_hamm = qam_mod_demod(data_hamm, EbNo(j));
+        
+        % Hamming Code error correction and decode
+        rdata_qam_hamm_deocded = cordecData(m, rdata_qam_hamm);
+        
+        % Error calculation
+        [err_qam(j,i), ber_qam] = biterr(rdata_qam, data);
+        [err_qam_hamm(j,i), ber_qam_hamm] = biterr(rdata_qam_hamm_deocded, data);
+        
+        % Calculating BER
+        noe_qam = noe_qam + err_qam(j,i);
+        noe_qam_hamm = noe_qam_hamm + err_qam_hamm(j,i);
+        nod = nod + length(data);
+    end
+    
+    % Calculating probability of error
+    pb_qam(j) = noe_qam/nod;
+    pb_qam_hamm(j) = noe_qam_hamm/nod;
+    theory_qam(j) = ((3/8)*erfc(sqrt((2/5)*SNR))-(9/64)*erfc(sqrt((2/5)*SNR)).^2);
+    
+    toc
+    
+end
+ 
+%% Plot graph
+ 
+figure(1)
+semilogy(EbNo, theory_qam, 'k-d', EbNo, pb_qam, 'b-d', EbNo, pb_qam_hamm, 'r-d')
+grid on
+xlabel('Eb/N0, dB')
+ylabel('Probability of error')
+legend('BPSK BER')
+title('Comparison of BER when using Hamming Code[15,11] in QAM')
+axis([0 12 0.000000001 1])
+legend('QAM Theory', 'QAM Simulation', 'Hamming Code QAM Simulation')
